@@ -41,20 +41,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<void> toggleArchive(String id, bool isArchived) async {
-    final category = await _categoryDao.getById(id);
-    if (category == null) return;
-    await _categoryDao.updateCategory(
-      id,
-      CategoryInput(
-        name: category.name,
-        iconName: category.iconName,
-        colorHex: category.colorHex,
-        isIncome: category.isIncome,
-        isArchived: isArchived,
-        sortOrder: category.sortOrder,
-        parentId: category.parentId,
-      ),
-    );
+    await _categoryDao.toggleArchive(id, isArchived);
   }
 
   @override

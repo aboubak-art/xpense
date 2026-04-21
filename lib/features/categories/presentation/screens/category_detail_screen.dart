@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import 'package:xpense/core/haptics/haptic_service.dart';
 import 'package:xpense/core/providers/dao_providers.dart';
+import 'package:xpense/core/utils/color_utils.dart';
 import 'package:xpense/domain/entities/category.dart';
 import 'package:xpense/features/categories/presentation/providers/category_provider.dart';
 import 'package:xpense/domain/repositories/category_repository.dart';
@@ -20,7 +21,7 @@ class CategoryDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final color = _hexToColor(category.colorHex);
+    final color = hexToColor(category.colorHex);
     final statsAsync = ref.watch(categoryStatsProvider(category.id));
     final subcategoriesAsync = ref.watch(subcategoriesProvider(category.id));
 
@@ -124,11 +125,11 @@ class CategoryDetailScreen extends ConsumerWidget {
                           margin: const EdgeInsets.only(bottom: 8),
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: _hexToColor(sub.colorHex)
+                              backgroundColor: hexToColor(sub.colorHex)
                                   .withValues(alpha: 0.15),
                               child: Icon(
                                 IconPicker.iconDataFromName(sub.iconName),
-                                color: _hexToColor(sub.colorHex),
+                                color: hexToColor(sub.colorHex),
                                 size: 18,
                               ),
                             ),
@@ -241,12 +242,6 @@ class CategoryDetailScreen extends ConsumerWidget {
     }
   }
 
-  Color _hexToColor(String hex) {
-    final buffer = StringBuffer();
-    if (hex.length == 6 || hex.length == 7) buffer.write('ff');
-    buffer.write(hex.replaceFirst('#', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
-  }
 }
 
 class _StatsGrid extends StatelessWidget {

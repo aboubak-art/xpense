@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:xpense/core/haptics/haptic_service.dart';
+import 'package:xpense/core/utils/color_utils.dart';
 import 'package:xpense/domain/entities/category.dart';
 import 'package:xpense/features/categories/presentation/providers/category_provider.dart';
 import 'package:xpense/features/categories/presentation/widgets/icon_picker.dart';
@@ -205,7 +206,7 @@ class _CategoryListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _hexToColor(category.colorHex);
+    final color = hexToColor(category.colorHex);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -246,10 +247,4 @@ class _CategoryListTile extends StatelessWidget {
     );
   }
 
-  Color _hexToColor(String hex) {
-    final buffer = StringBuffer();
-    if (hex.length == 6 || hex.length == 7) buffer.write('ff');
-    buffer.write(hex.replaceFirst('#', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
-  }
 }

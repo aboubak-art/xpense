@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:xpense/core/haptics/haptic_service.dart';
+import 'package:xpense/core/utils/color_utils.dart';
 import 'package:xpense/domain/entities/category.dart';
+import 'package:xpense/features/categories/presentation/widgets/icon_picker.dart';
 
 /// A grid of category chips for selecting an expense category.
 /// Recent categories appear first, followed by the full list.
@@ -26,14 +28,14 @@ class CategoryGrid extends StatelessWidget {
       runSpacing: 8,
       children: categories.map((cat) {
         final isSelected = cat.id == selectedId;
-        final color = _hexToColor(cat.colorHex);
+        final color = hexToColor(cat.colorHex);
 
         return ChoiceChip(
           label: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                _iconFromName(cat.iconName),
+                IconPicker.iconDataFromName(cat.iconName),
                 size: 18,
                 color: isSelected ? Colors.white : color,
               ),
@@ -65,27 +67,4 @@ class CategoryGrid extends StatelessWidget {
     );
   }
 
-  Color _hexToColor(String hex) {
-    final buffer = StringBuffer();
-    if (hex.length == 6 || hex.length == 7) buffer.write('ff');
-    buffer.write(hex.replaceFirst('#', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
-  }
-
-  IconData _iconFromName(String name) {
-    return switch (name) {
-      'restaurant' => Icons.restaurant,
-      'directions_car' => Icons.directions_car,
-      'shopping_bag' => Icons.shopping_bag,
-      'movie' => Icons.movie,
-      'bolt' => Icons.bolt,
-      'favorite' => Icons.favorite,
-      'school' => Icons.school,
-      'flight' => Icons.flight,
-      'receipt' => Icons.receipt,
-      'card_giftcard' => Icons.card_giftcard,
-      'more_horiz' => Icons.more_horiz,
-      _ => Icons.category,
-    };
-  }
 }

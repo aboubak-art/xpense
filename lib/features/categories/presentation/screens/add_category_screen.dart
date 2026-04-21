@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:xpense/core/haptics/haptic_service.dart';
+import 'package:xpense/core/utils/color_utils.dart';
 import 'package:xpense/domain/entities/category.dart';
 import 'package:xpense/features/categories/presentation/providers/category_provider.dart';
 import 'package:xpense/features/categories/presentation/widgets/color_picker.dart';
@@ -160,7 +161,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
           IconPicker(
             selectedIconName: _selectedIcon,
             onSelect: (name) => setState(() => _selectedIcon = name),
-            color: _hexToColor(_selectedColor ?? '#3B82F6'),
+            color: hexToColor(_selectedColor ?? '#3B82F6'),
           ),
           const SizedBox(height: 32),
 
@@ -194,10 +195,4 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
     );
   }
 
-  Color _hexToColor(String hex) {
-    final buffer = StringBuffer();
-    if (hex.length == 6 || hex.length == 7) buffer.write('ff');
-    buffer.write(hex.replaceFirst('#', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
-  }
 }

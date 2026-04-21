@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:xpense/core/haptics/haptic_service.dart';
+import 'package:xpense/core/utils/color_utils.dart';
 
 /// Predefined color palette for categories.
 const _categoryColors = [
@@ -36,7 +37,7 @@ class ColorPicker extends StatelessWidget {
       spacing: 12,
       runSpacing: 12,
       children: _categoryColors.map((hex) {
-        final color = _hexToColor(hex);
+        final color = hexToColor(hex);
         final isSelected = hex == selectedColorHex;
 
         return GestureDetector(
@@ -72,10 +73,4 @@ class ColorPicker extends StatelessWidget {
     );
   }
 
-  static Color _hexToColor(String hex) {
-    final buffer = StringBuffer();
-    if (hex.length == 6 || hex.length == 7) buffer.write('ff');
-    buffer.write(hex.replaceFirst('#', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
-  }
 }
