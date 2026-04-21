@@ -2,9 +2,11 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:xpense/core/providers/onboarding_provider.dart';
-import 'package:xpense/domain/entities/expense.dart';
+import 'package:xpense/domain/entities/budget.dart';
 import 'package:xpense/domain/entities/category.dart';
 import 'package:xpense/domain/entities/expense.dart';
+import 'package:xpense/features/budgets/presentation/screens/add_budget_screen.dart';
+import 'package:xpense/features/budgets/presentation/screens/budgets_screen.dart';
 import 'package:xpense/features/categories/presentation/screens/add_category_screen.dart';
 import 'package:xpense/features/categories/presentation/screens/categories_screen.dart';
 import 'package:xpense/features/categories/presentation/screens/category_detail_screen.dart';
@@ -67,6 +69,16 @@ GoRouter appRouter(AppRouterRef ref) {
         path: '/categories/detail',
         builder: (context, state) => CategoryDetailScreen(
           category: state.extra as Category,
+        ),
+      ),
+      GoRoute(
+        path: '/budgets',
+        builder: (context, state) => const BudgetsScreen(),
+      ),
+      GoRoute(
+        path: '/budgets/add',
+        builder: (context, state) => AddBudgetScreen(
+          budgetToEdit: state.extra as Budget?,
         ),
       ),
     ],

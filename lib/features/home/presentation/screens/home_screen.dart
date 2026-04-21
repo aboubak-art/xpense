@@ -464,6 +464,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             ListTile(
               leading: Icon(
+                Icons.account_balance_wallet,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: const Text('Budgets'),
+              subtitle: const Text('Set spending limits'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/budgets');
+              },
+            ),
+            ListTile(
+              leading: Icon(
                 Icons.dark_mode,
                 color: Theme.of(context).colorScheme.primary,
               ),

@@ -134,12 +134,12 @@
 **As a** user, **I want** to set spending limits, **so that** I can control my expenses.
 
 **Acceptance Criteria:**
-- [ ] Overall monthly budget
-- [ ] Per-category budgets
-- [ ] Budget period: monthly, weekly, daily, custom
-- [ ] Start date selection
-- [ ] Rollover option for unused budget
-- [ ] Custom alert thresholds (default 80%, 100%)
+- [x] Overall monthly budget
+- [x] Per-category budgets
+- [x] Budget period: monthly, weekly, daily, custom
+- [x] Start date selection
+- [x] Rollover option for unused budget
+- [x] Custom alert thresholds (default 80%, 100%)
 
 **Estimation:** 5 points
 
