@@ -196,14 +196,14 @@
 **As a** user, **I want** intelligent observations about my spending, **so that** I can improve habits.
 
 **Acceptance Criteria:**
-- [ ] Day-of-week spending patterns
-- [ ] Month-over-month comparisons
-- [ ] Anomaly detection (unusual charges)
-- [ ] Budget streak tracking
-- [ ] Encouraging milestone messages
-- [ ] Insights computed nightly in background
-- [ ] Dismissible insights card on dashboard
-- [ ] Push notification for noteworthy insights
+- [x] Day-of-week spending patterns
+- [x] Month-over-month comparisons
+- [x] Anomaly detection (unusual charges)
+- [x] Budget streak tracking
+- [x] Encouraging milestone messages
+- [ ] Insights computed nightly in background (deferred - no WorkManager/BGFetch yet)
+- [x] Dismissible insights card on dashboard
+- [ ] Push notification for noteworthy insights (deferred - no local notification infrastructure yet)
 
 **Estimation:** 5 points
 
