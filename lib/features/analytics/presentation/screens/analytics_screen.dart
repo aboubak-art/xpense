@@ -6,6 +6,7 @@ import 'package:xpense/features/analytics/presentation/providers/analytics_provi
 import 'package:xpense/features/analytics/presentation/widgets/biggest_expense_card.dart';
 import 'package:xpense/features/analytics/presentation/widgets/budget_status_card.dart';
 import 'package:xpense/features/analytics/presentation/widgets/income_vs_expense_card.dart';
+import 'package:xpense/features/analytics/presentation/widgets/insights_card.dart';
 import 'package:xpense/features/analytics/presentation/widgets/month_progress_card.dart';
 import 'package:xpense/features/analytics/presentation/widgets/today_spend_card.dart';
 import 'package:xpense/features/analytics/presentation/widgets/top_categories_card.dart';
@@ -33,6 +34,9 @@ class AnalyticsScreen extends ConsumerWidget {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
+              const SliverToBoxAdapter(
+                child: InsightsCard(),
+              ),
               SliverPadding(
                 padding: const EdgeInsets.all(16),
                 sliver: SliverToBoxAdapter(
