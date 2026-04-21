@@ -20,6 +20,12 @@ class AnalyticsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () => context.push('/reports'),
+          ),
+        ],
       ),
       body: metricsAsync.when(
         data: (metrics) => RefreshIndicator(
