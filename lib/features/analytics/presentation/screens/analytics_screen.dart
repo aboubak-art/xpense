@@ -44,7 +44,8 @@ class AnalyticsScreen extends ConsumerWidget {
                           Expanded(
                             child: MonthProgressCard(
                               monthSpendCents: metrics.monthSpendCents,
-                              lastMonthSpendCents: metrics.lastMonthSpendCents,
+                              monthTrendPercent: metrics.monthTrendPercent,
+                              monthTrendUp: metrics.monthTrendUp,
                               onTap: () => context.push('/'),
                             ),
                           ),
@@ -81,6 +82,7 @@ class AnalyticsScreen extends ConsumerWidget {
                             child: IncomeVsExpenseCard(
                               incomeCents: metrics.incomeCents,
                               expenseCents: metrics.expenseCents,
+                              savingsRate: metrics.savingsRate,
                               onTap: () => context.push('/'),
                             ),
                           ),

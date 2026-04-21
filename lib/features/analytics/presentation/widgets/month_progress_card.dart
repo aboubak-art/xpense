@@ -1,57 +1,40 @@
 import 'package:flutter/material.dart';
 
 import 'package:xpense/features/analytics/presentation/widgets/animated_count_up.dart';
+import 'package:xpense/features/analytics/presentation/widgets/dashboard_card.dart';
 
 /// Card showing this month's spending with trend indicator.
 class MonthProgressCard extends StatelessWidget {
   const MonthProgressCard({
     required this.monthSpendCents,
-    required this.lastMonthSpendCents,
+    required this.monthTrendPercent,
+    required this.monthTrendUp,
     this.onTap,
     super.key,
   });
 
   final int monthSpendCents;
-  final int lastMonthSpendCents;
+  final double monthTrendPercent;
+  final bool monthTrendUp;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final trendColor = monthTrendUp ? Colors.orange : Colors.green;
+    final trendIcon = monthTrendUp ? Icons.trending_up : Icons.trending_down;
 
-    final trendUp = monthSpendCents > lastMonthSpendCents;
-    final trendColor = trendUp ? Colors.orange : Colors.green;
-    final trendIcon = trendUp ? Icons.trending_up : Icons.trending_down;
+    final trendPercent = monthTrendPercent.abs() * 100;
+    final hasLastMonthData = monthTrendPercent != 0 || monthSpendCents == 0;
 
-    final trendPercent = lastMonthSpendCents > 0
-        ? ((monthSpendCents - lastMonthSpendCents) /
-                lastMonthSpendCents *
-                100)
-            .abs()
-            .round()
-        : 0;
-
-    return _DashboardCard(
+    return DashboardCard(
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_month,
-                size: 16,
-                color: colorScheme.primary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'This Month',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.outline,
-                ),
-              ),
-            ],
+          const MetricCardHeader(
+            icon: Icons.calendar_month,
+            label: 'This Month',
           ),
           const SizedBox(height: 8),
           CountUpCurrency(
@@ -63,15 +46,11 @@ class MonthProgressCard extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              Icon(
-                trendIcon,
-                size: 14,
-                color: trendColor,
-              ),
+              Icon(trendIcon, size: 14, color: trendColor),
               const SizedBox(width: 4),
               Text(
-                lastMonthSpendCents > 0
-                    ? '$trendPercent% vs last month'
+                hasLastMonthData
+                    ? '${trendPercent.round()}% vs last month'
                     : 'No last month data',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: trendColor,
@@ -81,31 +60,6 @@ class MonthProgressCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.child, this.onTap});
-
-  final Widget child;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: child,
-        ),
       ),
     );
   }

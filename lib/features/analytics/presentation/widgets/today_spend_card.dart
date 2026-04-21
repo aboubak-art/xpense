@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:xpense/features/analytics/presentation/widgets/animated_count_up.dart';
+import 'package:xpense/features/analytics/presentation/widgets/dashboard_card.dart';
 
 /// Card showing today's spending vs daily average.
 class TodaySpendCard extends StatelessWidget {
@@ -18,7 +20,6 @@ class TodaySpendCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     final isAboveAverage =
         dailyAverageCents > 0 && todaySpendCents > dailyAverageCents;
@@ -28,27 +29,12 @@ class TodaySpendCard extends StatelessWidget {
         ? '${isAboveAverage ? '+' : ''}${_pctDiff(todaySpendCents, dailyAverageCents)}% vs avg'
         : 'No data yet';
 
-    return _DashboardCard(
+    return DashboardCard(
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.today,
-                size: 16,
-                color: colorScheme.primary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'Today',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.outline,
-                ),
-              ),
-            ],
-          ),
+          const MetricCardHeader(icon: Icons.today, label: 'Today'),
           const SizedBox(height: 8),
           CountUpCurrency(
             cents: todaySpendCents,
@@ -60,9 +46,7 @@ class TodaySpendCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                isAboveAverage
-                    ? Icons.trending_up
-                    : Icons.trending_down,
+                isAboveAverage ? Icons.trending_up : Icons.trending_down,
                 size: 14,
                 color: comparisonColor,
               ),
@@ -84,33 +68,5 @@ class TodaySpendCard extends StatelessWidget {
   int _pctDiff(int current, int baseline) {
     if (baseline == 0) return 0;
     return ((current - baseline) / baseline * 100).round();
-  }
-}
-
-/// Reusable dashboard card container.
-class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.child, this.onTap});
-
-  final Widget child;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: child,
-        ),
-      ),
-    );
   }
 }

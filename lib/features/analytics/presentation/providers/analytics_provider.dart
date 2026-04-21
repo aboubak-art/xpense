@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:xpense/core/providers/dao_providers.dart';
+import 'package:xpense/data/datasources/expense_dao.dart';
 import 'package:xpense/domain/entities/budget.dart';
 import 'package:xpense/domain/entities/category.dart';
 import 'package:xpense/domain/entities/expense.dart';
@@ -45,6 +46,7 @@ class DashboardMetrics {
   final int overBudgetCount;
 
   bool get monthTrendUp => monthSpendCents > lastMonthSpendCents;
+
   double get monthTrendPercent {
     if (lastMonthSpendCents == 0) return 0;
     return (monthSpendCents - lastMonthSpendCents) / lastMonthSpendCents;
@@ -56,30 +58,47 @@ class DashboardMetrics {
   }
 }
 
-/// Provider that computes all dashboard metrics in a single pass.
+/// Provider that computes all dashboard metrics.
 final dashboardMetricsProvider = FutureProvider<DashboardMetrics>((ref) async {
   final expenseDao = ref.watch(expenseDaoProvider);
   final categoryDao = ref.watch(categoryDaoProvider);
   final budgetDao = ref.watch(budgetDaoProvider);
 
   final now = DateTime.now();
-
-  // --- Today ---
   final todayStart = DateTime(now.year, now.month, now.day);
   final todayEnd = todayStart
       .add(const Duration(days: 1))
       .subtract(const Duration(seconds: 1));
-  final todaySpendCents = await expenseDao.totalAmountCentsByDateRange(
-    todayStart,
-    todayEnd,
-  );
 
-  // --- Daily average (last 30 days) ---
-  final thirtyDaysAgo = todayStart.subtract(const Duration(days: 30));
-  final last30DaysExpenses = await expenseDao.getByDateRange(
-    thirtyDaysAgo,
-    todayEnd,
-  );
+  final monthStart = DateTime(now.year, now.month, 1);
+  final monthEnd = DateTime(now.year, now.month + 1, 1)
+      .subtract(const Duration(seconds: 1));
+
+  final lastMonthStart = DateTime(now.year, now.month - 1, 1);
+  final lastMonthEnd = DateTime(now.year, now.month, 1)
+      .subtract(const Duration(seconds: 1));
+
+  // Fetch independent data concurrently
+  final results = await Future.wait([
+    expenseDao.totalAmountCentsByDateRange(todayStart, todayEnd),
+    expenseDao.getByDateRange(
+      todayStart.subtract(const Duration(days: 30)),
+      todayEnd,
+    ),
+    expenseDao.getByDateRange(monthStart, monthEnd),
+    expenseDao.totalAmountCentsByDateRange(lastMonthStart, lastMonthEnd),
+    categoryDao.getAll(),
+    budgetDao.getAll(),
+  ]);
+
+  final todaySpendCents = results[0] as int;
+  final last30DaysExpenses = results[1] as List<Expense>;
+  final monthExpenses = results[2] as List<Expense>;
+  final lastMonthSpendCents = results[3] as int;
+  final categories = results[4] as List<Category>;
+  final budgets = results[5] as List<Budget>;
+
+  // Daily average
   final last30DaysTotal = last30DaysExpenses.fold<int>(
     0,
     (sum, e) => sum + e.amountCents,
@@ -92,30 +111,16 @@ final dashboardMetricsProvider = FutureProvider<DashboardMetrics>((ref) async {
       ? 0
       : (last30DaysTotal / uniqueDays.length).round();
 
-  // --- This month ---
-  final monthStart = DateTime(now.year, now.month, 1);
-  final monthEnd = DateTime(now.year, now.month + 1, 1)
-      .subtract(const Duration(seconds: 1));
-  final monthExpenses = await expenseDao.getByDateRange(monthStart, monthEnd);
+  // Month total
   final monthSpendCents = monthExpenses.fold<int>(
     0,
     (sum, e) => sum + e.amountCents,
   );
 
-  // --- Last month ---
-  final lastMonthStart = DateTime(now.year, now.month - 1, 1);
-  final lastMonthEnd = DateTime(now.year, now.month, 1)
-      .subtract(const Duration(seconds: 1));
-  final lastMonthSpendCents = await expenseDao.totalAmountCentsByDateRange(
-    lastMonthStart,
-    lastMonthEnd,
-  );
-
-  // --- Categories for mapping ---
-  final categories = await categoryDao.getAll();
+  // Categories mapping
   final categoryMap = {for (final c in categories) c.id: c};
 
-  // --- Top 3 spending categories (this month) ---
+  // Top 3 categories
   final categoryTotals = <String, int>{};
   for (final e in monthExpenses) {
     categoryTotals[e.categoryId] =
@@ -137,7 +142,7 @@ final dashboardMetricsProvider = FutureProvider<DashboardMetrics>((ref) async {
     }
   }
 
-  // --- Biggest expense this month ---
+  // Biggest expense
   Expense? biggestExpense;
   for (final e in monthExpenses) {
     if (biggestExpense == null || e.amountCents > biggestExpense.amountCents) {
@@ -145,7 +150,7 @@ final dashboardMetricsProvider = FutureProvider<DashboardMetrics>((ref) async {
     }
   }
 
-  // --- Income vs Expense (this month) ---
+  // Income vs expense
   var incomeCents = 0;
   var expenseCents = 0;
   for (final e in monthExpenses) {
@@ -157,28 +162,25 @@ final dashboardMetricsProvider = FutureProvider<DashboardMetrics>((ref) async {
     }
   }
 
-  // --- Budget status ---
-  final budgets = await budgetDao.getAll();
+  // Budget status — compute concurrently per budget
   var activeBudgetCount = 0;
   var overBudgetCount = 0;
+  final budgetFutures = <Future<(bool, int)>>[];
   for (final budget in budgets) {
     activeBudgetCount++;
-    final (budgetStart, budgetEnd) = _budgetPeriodBounds(budget, now);
-    int spent;
-    if (budget.categoryId != null) {
-      final expenses = await expenseDao.getByCategoryAndDateRange(
-        budget.categoryId!,
-        budgetStart,
-        budgetEnd,
-      );
-      spent = expenses.fold<int>(0, (sum, e) => sum + e.amountCents);
-    } else {
-      final expenses = await expenseDao.getByDateRange(budgetStart, budgetEnd);
-      spent = expenses.fold<int>(0, (sum, e) => sum + e.amountCents);
-    }
-    if (spent > budget.amountCents) {
-      overBudgetCount++;
-    }
+    final (start, end) = _budgetPeriodBounds(budget, now);
+    budgetFutures.add(
+      _budgetSpent(
+        expenseDao: expenseDao,
+        budget: budget,
+        start: start,
+        end: end,
+      ),
+    );
+  }
+  final budgetResults = await Future.wait(budgetFutures);
+  for (final (isOver, _) in budgetResults) {
+    if (isOver) overBudgetCount++;
   }
 
   return DashboardMetrics(
@@ -194,6 +196,27 @@ final dashboardMetricsProvider = FutureProvider<DashboardMetrics>((ref) async {
     overBudgetCount: overBudgetCount,
   );
 });
+
+Future<(bool, int)> _budgetSpent({
+  required ExpenseDao expenseDao,
+  required Budget budget,
+  required DateTime start,
+  required DateTime end,
+}) async {
+  int spent;
+  if (budget.categoryId != null) {
+    final expenses = await expenseDao.getByCategoryAndDateRange(
+      budget.categoryId!,
+      start,
+      end,
+    );
+    spent = expenses.fold<int>(0, (sum, e) => sum + e.amountCents);
+  } else {
+    final expenses = await expenseDao.getByDateRange(start, end);
+    spent = expenses.fold<int>(0, (sum, e) => sum + e.amountCents);
+  }
+  return (spent > budget.amountCents, spent);
+}
 
 (DateTime, DateTime) _budgetPeriodBounds(Budget budget, DateTime now) {
   final today = DateTime(now.year, now.month, now.day);

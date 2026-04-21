@@ -1,56 +1,46 @@
 import 'package:flutter/material.dart';
 
 import 'package:xpense/features/analytics/presentation/widgets/animated_count_up.dart';
+import 'package:xpense/features/analytics/presentation/widgets/dashboard_card.dart';
 
 /// Card showing income vs expense summary with a visual bar.
 class IncomeVsExpenseCard extends StatelessWidget {
   const IncomeVsExpenseCard({
     required this.incomeCents,
     required this.expenseCents,
+    required this.savingsRate,
     this.onTap,
     super.key,
   });
 
   final int incomeCents;
   final int expenseCents;
+  final double savingsRate;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     final total = incomeCents + expenseCents;
     final incomeRatio = total > 0 ? incomeCents / total : 0.0;
     final hasData = incomeCents > 0 || expenseCents > 0;
 
-    return _DashboardCard(
+    return DashboardCard(
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.compare_arrows,
-                size: 16,
-                color: colorScheme.primary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'Income vs Expense',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.outline,
-                ),
-              ),
-            ],
+          const MetricCardHeader(
+            icon: Icons.compare_arrows,
+            label: 'Income vs Expense',
           ),
           const SizedBox(height: 12),
           if (!hasData)
             Text(
               'No data yet',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.outline,
+                color: theme.colorScheme.outline,
               ),
             )
           else ...[
@@ -74,34 +64,13 @@ class IncomeVsExpenseCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: SizedBox(
-                height: 8,
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: (incomeRatio * 100).round(),
-                      child: const ColoredBox(
-                        color: Colors.green,
-                      ),
-                    ),
-                    Expanded(
-                      flex: ((1 - incomeRatio) * 100).round(),
-                      child: const ColoredBox(
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _SplitBar(incomeRatio: incomeRatio),
             const SizedBox(height: 8),
             if (incomeCents > 0)
               Text(
-                'Saved ${_savingsRate(incomeCents, expenseCents)}%',
+                'Saved ${(savingsRate * 100).round().clamp(0, 100)}%',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.outline,
+                  color: theme.colorScheme.outline,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -110,10 +79,37 @@ class IncomeVsExpenseCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  int _savingsRate(int income, int expense) {
-    if (income <= 0) return 0;
-    return ((income - expense) / income * 100).round().clamp(0, 100);
+class _SplitBar extends StatelessWidget {
+  const _SplitBar({required this.incomeRatio});
+
+  final double incomeRatio;
+
+  @override
+  Widget build(BuildContext context) {
+    // Avoid rounding errors by using one flex derived from the other
+    final incomeFlex = (incomeRatio * 100).round();
+    final expenseFlex = 100 - incomeFlex;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: SizedBox(
+        height: 8,
+        child: Row(
+          children: [
+            Expanded(
+              flex: incomeFlex,
+              child: const ColoredBox(color: Colors.green),
+            ),
+            Expanded(
+              flex: expenseFlex,
+              child: const ColoredBox(color: Colors.red),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -153,31 +149,6 @@ class _AmountLabel extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.child, this.onTap});
-
-  final Widget child;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: child,
-        ),
-      ),
     );
   }
 }
