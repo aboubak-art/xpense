@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /// Animates a numeric value counting up from zero to [value].
 ///
@@ -67,10 +68,8 @@ class _AnimatedCountUpState extends State<AnimatedCountUp>
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        // Snap to final value on completion to avoid fractional jitter
-        final displayValue = _controller.isCompleted
-            ? widget.value
-            : _animation.value;
+        final displayValue =
+            _controller.isCompleted ? widget.value : _animation.value;
         return widget.builder(context, displayValue);
       },
     );
@@ -96,10 +95,9 @@ class CountUpCurrency extends StatelessWidget {
       value: cents / 100,
       duration: duration,
       builder: (context, value) {
-        final whole = value.floor();
-        final fraction = ((value - whole) * 100).round();
+        final formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
         return Text(
-          '\$$whole.${fraction.toString().padLeft(2, '0')}',
+          formatter.format(value),
           style: style,
         );
       },
