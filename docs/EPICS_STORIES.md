@@ -181,14 +181,14 @@
 **As a** user, **I want** detailed spending analysis, **so that** I can identify patterns.
 
 **Acceptance Criteria:**
-- [ ] Spending trend line chart (daily/weekly/monthly view)
-- [ ] Category breakdown donut chart
-- [ ] Cash flow bar chart (income vs expense)
-- [ ] Calendar heatmap of daily spending
-- [ ] Merchant analysis: top merchants, frequency
-- [ ] Date range selector (custom presets)
-- [ ] Charts animate on first appearance
-- [ ] All charts support tap for details
+- [x] Spending trend line chart (daily/weekly/monthly view)
+- [x] Category breakdown donut chart
+- [x] Cash flow bar chart (income vs expense)
+- [x] Calendar heatmap of daily spending
+- [x] Merchant analysis: top merchants, frequency
+- [x] Date range selector (custom presets)
+- [x] Charts animate on first appearance
+- [x] All charts support tap for details
 
 **Estimation:** 8 points
 
