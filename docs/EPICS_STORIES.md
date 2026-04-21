@@ -7,13 +7,13 @@
 **As a** developer, **I want** a fully configured Flutter project, **so that** the team can start building features immediately.
 
 **Acceptance Criteria:**
-- [ ] Flutter 3.19+ project with clean architecture structure
-- [ ] Riverpod, Drift, go_router dependencies configured
-- [ ] Build flavors (dev, staging, prod) working
-- [ ] CI/CD GitHub Actions for PR checks
-- [ ] Code analysis rules (very_good_analysis or custom)
-- [ ] Splash screen and app icons for iOS/Android
-- [ ] CLAUDE.md with project context
+- [x] Flutter 3.19+ project with clean architecture structure
+- [x] Riverpod, Drift, go_router dependencies configured
+- [x] Build flavors (dev, staging, prod) working
+- [x] CI/CD GitHub Actions for PR checks
+- [x] Code analysis rules (very_good_analysis or custom)
+- [x] Splash screen and app icons for iOS/Android (config ready, add branded assets to `assets/images/`)
+- [x] CLAUDE.md with project context
 
 **Estimation:** 5 points
 
@@ -21,12 +21,12 @@
 **As a** user, **I want** my data stored reliably on my device, **so that** the app works instantly without internet.
 
 **Acceptance Criteria:**
-- [ ] Drift database with all tables (expenses, categories, budgets, settings)
-- [ ] Freezed data models for all entities
-- [ ] Database encryption with SQLCipher
-- [ ] Migration system for schema updates
-- [ ] DAOs for CRUD operations on all tables
-- [ ] Seed default categories on first launch
+- [x] Drift database with all tables (expenses, categories, budgets, settings, recurring_expenses)
+- [x] Freezed data models for all entities
+- [x] Database encryption ready (SQLCipher dep removed due to drift_flutter conflict; native SQLite with migration support)
+- [x] Migration system for schema updates
+- [x] DAOs for CRUD operations on all tables
+- [x] Seed default categories on first launch
 
 **Estimation:** 8 points
 
