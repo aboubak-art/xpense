@@ -199,6 +199,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               title: const Text('Xpense'),
               actions: [
                 IconButton(
+                  icon: const Icon(Icons.insights),
+                  onPressed: () => context.push('/analytics'),
+                ),
+                IconButton(
                   icon: const Icon(Icons.settings),
                   onPressed: () => _showSettingsMenu(context, ref),
                 ),
@@ -442,6 +446,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Navigator.pop(context);
                 ref.read(onboardingProvider.notifier).reset();
                 context.go('/onboarding');
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.insights,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: const Text('Dashboard'),
+              subtitle: const Text('View spending analytics'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/analytics');
               },
             ),
             ListTile(

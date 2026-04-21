@@ -11,6 +11,7 @@ import 'package:xpense/features/categories/presentation/screens/add_category_scr
 import 'package:xpense/features/categories/presentation/screens/categories_screen.dart';
 import 'package:xpense/features/categories/presentation/screens/category_detail_screen.dart';
 import 'package:xpense/features/expenses/presentation/screens/add_expense_screen.dart';
+import 'package:xpense/features/analytics/presentation/screens/analytics_screen.dart';
 import 'package:xpense/features/home/presentation/screens/home_screen.dart';
 import 'package:xpense/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:xpense/features/recurring/presentation/screens/recurring_expenses_screen.dart';
@@ -70,6 +71,10 @@ GoRouter appRouter(AppRouterRef ref) {
         builder: (context, state) => CategoryDetailScreen(
           category: state.extra as Category,
         ),
+      ),
+      GoRoute(
+        path: '/analytics',
+        builder: (context, state) => const AnalyticsScreen(),
       ),
       GoRoute(
         path: '/budgets',
