@@ -166,14 +166,14 @@
 **As a** user, **I want** a quick overview of my finances, **so that** I understand my status at a glance.
 
 **Acceptance Criteria:**
-- [ ] Today's spend with daily average comparison
-- [ ] This month progress with trend indicator
-- [ ] Top 3 spending categories
-- [ ] Biggest expense this period
-- [ ] Budget status summary
-- [ ] Income vs expense summary
-- [ ] Widgets are tappable for detailed view
-- [ ] Smooth count-up animations for numbers
+- [x] Today's spend with daily average comparison
+- [x] This month progress with trend indicator
+- [x] Top 3 spending categories
+- [x] Biggest expense this period
+- [x] Budget status summary
+- [x] Income vs expense summary
+- [x] Widgets are tappable for detailed view
+- [x] Smooth count-up animations for numbers
 
 **Estimation:** 5 points
 
