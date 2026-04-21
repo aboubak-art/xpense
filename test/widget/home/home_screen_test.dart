@@ -5,13 +5,32 @@ import 'package:go_router/go_router.dart';
 
 import 'package:xpense/core/providers/dao_providers.dart';
 import 'package:xpense/core/providers/onboarding_provider.dart';
+import 'package:xpense/data/datasources/budget_dao.dart';
 import 'package:xpense/data/datasources/category_dao.dart';
 import 'package:xpense/data/datasources/expense_dao.dart';
+import 'package:xpense/domain/entities/budget.dart';
 import 'package:xpense/domain/entities/category.dart';
 import 'package:xpense/domain/entities/expense.dart';
 import 'package:xpense/features/expenses/presentation/providers/expense_list_provider.dart';
 import 'package:xpense/features/expenses/presentation/widgets/expense_card.dart';
 import 'package:xpense/features/home/presentation/screens/home_screen.dart';
+
+class _FakeBudgetDao implements BudgetDao {
+  @override
+  Future<List<Budget>> getAll() async => [];
+
+  @override
+  Future<Budget?> getById(String id) async => null;
+
+  @override
+  Future<Budget> create(BudgetInput input) async => throw UnimplementedError();
+
+  @override
+  Future<void> updateBudget(String id, BudgetInput input) async {}
+
+  @override
+  Future<void> deleteBudget(String id) async {}
+}
 
 class _FakeCategoryDao implements CategoryDao {
   @override
@@ -177,6 +196,7 @@ void main() {
             onboardingProvider.overrideWith(
               (ref) => OnboardingNotifier(initialValue: true),
             ),
+            budgetDaoProvider.overrideWithValue(_FakeBudgetDao()),
             categoryDaoProvider.overrideWithValue(_FakeCategoryDao()),
             expenseDaoProvider.overrideWithValue(fakeExpenseDao),
             expenseListProvider.overrideWith(

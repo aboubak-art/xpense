@@ -24,6 +24,28 @@ final budgetSpentProvider =
   return repo.getSpentCents(budgetId);
 });
 
+/// Provider for the relevant budget for a given category (or overall).
+final categoryBudgetProvider =
+    FutureProvider.family<Budget?, String?>((ref, categoryId) async {
+  final repo = ref.watch(budgetRepositoryProvider);
+  final budgets = await repo.getAll();
+  // Prefer category-specific budget, fallback to overall budget
+  for (final budget in budgets) {
+    if (budget.categoryId == categoryId) return budget;
+  }
+  for (final budget in budgets) {
+    if (budget.categoryId == null) return budget;
+  }
+  return null;
+});
+
+/// Provider for remaining cents of a budget.
+final budgetRemainingProvider =
+    FutureProvider.family<int, String>((ref, budgetId) async {
+  final repo = ref.watch(budgetRepositoryProvider);
+  return repo.getRemainingCents(budgetId);
+});
+
 /// Notifier for budget list operations.
 class BudgetListNotifier extends StateNotifier<AsyncValue<List<Budget>>> {
   BudgetListNotifier(this._repository) : super(const AsyncValue.loading());

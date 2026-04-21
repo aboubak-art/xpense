@@ -147,13 +147,13 @@
 **As a** user, **I want** real-time budget feedback, **so that** I know when I'm overspending.
 
 **Acceptance Criteria:**
-- [ ] Circular progress ring on dashboard per active budget
-- [ ] Color-coded: green (0-50%), blue (50-80%), orange (80-100%), red (100%+)
-- [ ] Warning haptic at 80% threshold
-- [ ] Strong alert haptic + animation at 100%
-- [ ] Budget remaining shown on add expense screen
-- [ ] End-of-period summary (under/over budget)
-- [ ] Push notification for budget warnings
+- [x] Circular progress ring on dashboard per active budget
+- [x] Color-coded: green (0-50%), blue (50-80%), orange (80-100%), red (100%+)
+- [x] Warning haptic at 80% threshold
+- [x] Strong alert haptic + animation at 100%
+- [x] Budget remaining shown on add expense screen
+- [x] End-of-period summary (under/over budget)
+- [ ] Push notification for budget warnings (deferred - requires local notification infrastructure)
 
 **Estimation:** 5 points
 

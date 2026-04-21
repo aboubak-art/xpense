@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import 'package:xpense/core/haptics/haptic_service.dart';
 import 'package:xpense/core/providers/dao_providers.dart';
 import 'package:xpense/domain/entities/category.dart';
 import 'package:xpense/domain/entities/expense.dart';
+import 'package:xpense/features/budgets/presentation/providers/budget_provider.dart';
 import 'package:xpense/features/expenses/presentation/widgets/category_grid.dart';
 import 'package:xpense/features/expenses/presentation/widgets/custom_keypad.dart';
 import 'package:xpense/features/expenses/presentation/widgets/success_overlay.dart';
@@ -142,6 +144,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen>
         await dao.create(input);
       }
 
+      await _checkBudgetThresholds(cents);
+
       unawaited(HapticService.success());
       setState(() {
         _showSuccess = true;
@@ -232,6 +236,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen>
                   ),
                 ),
 
+                // Budget status for selected category
+                if (_selectedCategoryId != null)
+                  _BudgetStatusChip(categoryId: _selectedCategoryId!),
+
                 // Category selection
                 Expanded(
                   child: Padding(
@@ -289,6 +297,116 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen>
 
   bool get _hasOptionalFields =>
       _note.isNotEmpty || _merchant.isNotEmpty || _paymentMethod.isNotEmpty;
+
+  Future<void> _checkBudgetThresholds(int cents) async {
+    if (_selectedCategoryId == null) return;
+
+    final container = ProviderContainer();
+    final budget = await container.read(
+      categoryBudgetProvider(_selectedCategoryId!).future,
+    );
+    if (budget == null) {
+      container.dispose();
+      return;
+    }
+
+    final remaining = await container.read(
+      budgetRemainingProvider(budget.id).future,
+    );
+    container.dispose();
+
+    final afterSpend = remaining - cents;
+    final total = budget.amountCents;
+    if (total <= 0) return;
+
+    final pctBefore = (remaining / total).clamp(0.0, 1.0);
+    final pctAfter = (afterSpend / total).clamp(0.0, 1.0);
+
+    if (pctBefore >= 0.8 && pctAfter < 0.8) {
+      // Just dropped below 80% — no haptic needed
+    } else if (pctBefore > 1.0 && pctAfter <= 1.0) {
+      // Just came back under budget — no haptic needed
+    } else if (pctBefore < 0.8 && pctAfter >= 0.8 && pctAfter < 1.0) {
+      // Crossed 80% threshold
+      await HapticService.warning();
+    } else if (pctBefore < 1.0 && pctAfter >= 1.0) {
+      // Crossed 100% threshold — over budget
+      await HapticService.doubleWarning();
+    }
+  }
+}
+
+/// Shows budget remaining for the selected category.
+class _BudgetStatusChip extends ConsumerWidget {
+  const _BudgetStatusChip({required this.categoryId});
+
+  final String categoryId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final budgetAsync = ref.watch(categoryBudgetProvider(categoryId));
+
+    return budgetAsync.when(
+      data: (budget) {
+        if (budget == null) return const SizedBox.shrink();
+        return _BudgetRemainingText(budgetId: budget.id, total: budget.amountCents);
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _BudgetRemainingText extends ConsumerWidget {
+  const _BudgetRemainingText({
+    required this.budgetId,
+    required this.total,
+  });
+
+  final String budgetId;
+  final int total;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final remainingAsync = ref.watch(budgetRemainingProvider(budgetId));
+
+    return remainingAsync.when(
+      data: (remaining) {
+        final currency = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+        final pct = total > 0 ? (1 - (remaining / total)).clamp(0.0, 1.0) : 0.0;
+        final color = pct >= 1.0
+            ? Colors.red
+            : pct >= 0.8
+                ? Colors.orange
+                : Colors.green;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Chip(
+            avatar: Icon(
+              Icons.account_balance_wallet,
+              size: 18,
+              color: color,
+            ),
+            label: Text(
+              remaining >= 0
+                  ? '${currency.format(remaining / 100)} left'
+                  : '${currency.format(remaining.abs() / 100)} over',
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+            backgroundColor: color.withValues(alpha: 0.1),
+            side: BorderSide.none,
+            visualDensity: VisualDensity.compact,
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
 }
 
 final _categoriesProvider = FutureProvider<List<Category>>((ref) async {

@@ -12,6 +12,8 @@ import 'package:xpense/domain/entities/expense.dart';
 import 'package:xpense/features/expenses/presentation/providers/expense_list_provider.dart';
 import 'package:xpense/features/expenses/presentation/widgets/empty_expense_state.dart';
 import 'package:xpense/features/expenses/presentation/widgets/expense_card.dart';
+import 'package:xpense/features/budgets/presentation/providers/budget_provider.dart';
+import 'package:xpense/features/budgets/presentation/widgets/budget_summary_bar.dart';
 import 'package:xpense/features/expenses/presentation/widgets/expense_filter_sheet.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -31,6 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(expenseListProvider.notifier).refresh();
+      ref.read(budgetListNotifierProvider.notifier).load();
     });
   }
 
@@ -241,6 +244,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
               ),
             ),
+
+          // Budget summary
+          if (!_isSelecting) const BudgetSummaryBar(),
 
           // Expense list
           Expanded(

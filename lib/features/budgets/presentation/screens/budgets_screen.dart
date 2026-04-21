@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:xpense/core/haptics/haptic_service.dart';
 import 'package:xpense/domain/entities/budget.dart';
 import 'package:xpense/features/budgets/presentation/providers/budget_provider.dart';
+import 'package:xpense/features/budgets/presentation/widgets/budget_period_summary.dart';
 import 'package:xpense/features/budgets/presentation/widgets/budget_progress_ring.dart';
 
 class BudgetsScreen extends ConsumerStatefulWidget {
@@ -48,7 +49,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
               final budget = budgets[index];
               return _BudgetCard(
                 budget: budget,
-                onTap: () => context.push('/budgets/add', extra: budget),
+                onTap: () => _showBudgetDetail(budget),
                 onDelete: () => _confirmDelete(budget),
               );
             },
@@ -61,6 +62,68 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
         onPressed: () => context.push('/budgets/add'),
         icon: const Icon(Icons.add),
         label: const Text('New Budget'),
+      ),
+    );
+  }
+
+  Future<void> _showBudgetDetail(Budget budget) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              BudgetPeriodSummary(budget: budget),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context.push('/budgets/add', extra: budget);
+                        },
+                        icon: const Icon(Icons.edit),
+                        label: const Text('Edit'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _confirmDelete(budget);
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        icon: const Icon(Icons.delete),
+                        label: const Text('Delete'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
