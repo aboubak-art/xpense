@@ -90,6 +90,37 @@ class CategoryDao {
     );
   }
 
+  Future<List<domain.Category>> getSubcategories(String parentId) async {
+    final query = _db.select(_db.categories)
+      ..where(
+        (c) =>
+            c.parentId.equals(parentId) &
+            c.deletedAt.isNull() &
+            c.isArchived.equals(false),
+      )
+      ..orderBy([(c) => OrderingTerm(expression: c.sortOrder)]);
+    final rows = await query.get();
+    return rows.map(_toDomain).toList();
+  }
+
+  Future<void> updateSortOrder(String id, int sortOrder) async {
+    await (_db.update(_db.categories)..where((c) => c.id.equals(id))).write(
+      db.CategoriesCompanion(
+        sortOrder: Value(sortOrder),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> toggleArchive(String id, bool isArchived) async {
+    await (_db.update(_db.categories)..where((c) => c.id.equals(id))).write(
+      db.CategoriesCompanion(
+        isArchived: Value(isArchived),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   Future<int> count() async {
     return _db.categories.count().getSingle();
   }

@@ -134,6 +134,13 @@ class _FakeExpenseDao implements ExpenseDao {
   }) async =>
       _expenses;
 
+  @override
+  Future<List<Expense>> getByCategoryAndDateRange(
+    String categoryId,
+    DateTime start,
+    DateTime end,
+  ) async => [];
+
   List<Expense> get expenses => List.unmodifiable(_expenses);
 }
 

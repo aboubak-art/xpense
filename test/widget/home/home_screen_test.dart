@@ -40,6 +40,15 @@ class _FakeCategoryDao implements CategoryDao {
 
   @override
   Future<int> count() async => 1;
+
+  @override
+  Future<List<Category>> getSubcategories(String parentId) async => [];
+
+  @override
+  Future<void> toggleArchive(String id, bool isArchived) async {}
+
+  @override
+  Future<void> updateSortOrder(String id, int sortOrder) async {}
 }
 
 class _FakeExpenseDao implements ExpenseDao {
@@ -132,6 +141,13 @@ class _FakeExpenseDao implements ExpenseDao {
 
     return results.skip(offset).take(limit).toList();
   }
+
+  @override
+  Future<List<Expense>> getByCategoryAndDateRange(
+    String categoryId,
+    DateTime start,
+    DateTime end,
+  ) async => [];
 }
 
 void main() {

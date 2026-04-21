@@ -95,6 +95,25 @@ class ExpenseDao {
     return rows.map(_toDomain).toList();
   }
 
+  Future<List<domain.Expense>> getByCategoryAndDateRange(
+    String categoryId,
+    DateTime start,
+    DateTime end,
+  ) async {
+    final query = _db.select(_db.expenses)
+      ..where(
+        (e) =>
+            e.categoryId.equals(categoryId) &
+            e.date.isBetweenValues(start, end) &
+            e.deletedAt.isNull(),
+      )
+      ..orderBy(
+        [(e) => OrderingTerm(expression: e.date, mode: OrderingMode.desc)],
+      );
+    final rows = await query.get();
+    return rows.map(_toDomain).toList();
+  }
+
   Future<List<domain.Expense>> getByDateRange(
     DateTime start,
     DateTime end,

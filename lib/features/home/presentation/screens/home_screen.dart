@@ -452,6 +452,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             ListTile(
               leading: Icon(
+                Icons.category,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: const Text('Categories'),
+              subtitle: const Text('Organize your spending'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/categories');
+              },
+            ),
+            ListTile(
+              leading: Icon(
                 Icons.dark_mode,
                 color: Theme.of(context).colorScheme.primary,
               ),

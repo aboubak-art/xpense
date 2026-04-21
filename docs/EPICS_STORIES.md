@@ -115,13 +115,13 @@
 **As a** user, **I want** to organize expenses by category, **so that** I understand where my money goes.
 
 **Acceptance Criteria:**
-- [ ] 11 default categories with icons and colors
-- [ ] Create custom categories (name, icon, color)
-- [ ] Subcategories (2 levels max)
-- [ ] Reorder categories (drag and drop)
-- [ ] Category detail: total spent, transaction count, trend
-- [ ] Archive/hide unused categories
-- [ ] Income categories (separate from expenses)
+- [x] 11 default categories with icons and colors
+- [x] Create custom categories (name, icon, color)
+- [x] Subcategories (2 levels max)
+- [x] Reorder categories (drag and drop)
+- [x] Category detail: total spent, transaction count, trend
+- [x] Archive/hide unused categories
+- [x] Income categories (separate from expenses)
 
 **Estimation:** 5 points
 
