@@ -21,7 +21,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -30,9 +30,8 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createAll();
       },
       onUpgrade: (migrator, from, to) async {
-        // Custom migration logic for future schema versions
         if (from < 2) {
-          // Example: await migrator.addColumn(table, column);
+          await migrator.addColumn(expenses, expenses.recurringExpenseId);
         }
       },
     );

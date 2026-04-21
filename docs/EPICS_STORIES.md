@@ -34,13 +34,13 @@
 **As a** new user, **I want** a guided setup experience, **so that** I can configure the app in under 60 seconds.
 
 **Acceptance Criteria:**
-- [ ] Welcome screen with animated logo
-- [ ] Currency selection with auto-detect
-- [ ] Optional budget setup (skippable)
-- [ ] Interactive tutorial: guided first expense
-- [ ] Settings for notifications and biometrics
-- [ ] Can replay onboarding from settings
-- [ ] Onboarding state persisted
+- [x] Welcome screen with animated logo
+- [x] Currency selection with auto-detect (32 currencies)
+- [x] Optional budget setup (skippable)
+- [x] Interactive tutorial: guided first expense
+- [x] Settings for notifications and biometrics (UI placeholders, logic in Story 7.x)
+- [x] Can replay onboarding from settings
+- [x] Onboarding state persisted via SharedPreferences
 
 **Estimation:** 5 points
 
@@ -53,14 +53,14 @@
 **As a** user, **I want** to add an expense in under 3 seconds, **so that** tracking doesn't interrupt my day.
 
 **Acceptance Criteria:**
-- [ ] Custom numeric keypad (not system keyboard)
-- [ ] Amount input with currency formatting
-- [ ] Category grid with recent categories first
-- [ ] Quick-save with smart defaults (today, default currency)
-- [ ] Optional fields: note, merchant, payment method, tags, location
-- [ ] Haptic feedback on every interaction
-- [ ] Success animation on save
-- [ ] "Add another" button for batch entry
+- [x] Custom numeric keypad (not system keyboard)
+- [x] Amount input with currency formatting
+- [x] Category grid with recent categories first
+- [x] Quick-save with smart defaults (today, default currency)
+- [x] Optional fields: note, merchant, payment method, tags, location
+- [x] Haptic feedback on every interaction
+- [x] Success animation on save
+- [x] "Add another" button for batch entry
 
 **Estimation:** 8 points
 
@@ -68,13 +68,13 @@
 **As a** user, **I want** to browse and search my expenses, **so that** I can review my spending.
 
 **Acceptance Criteria:**
-- [ ] Chronological list with date grouping (Today, Yesterday, This Week, etc.)
-- [ ] Pull-to-refresh with sync trigger
-- [ ] Search by amount, merchant, note, category
-- [ ] Filter by date range, category, payment method
-- [ ] Sort by date (default), amount, category
-- [ ] Infinite scroll pagination
-- [ ] Empty state with encouragement
+- [x] Chronological list with date grouping (Today, Yesterday, This Week, etc.)
+- [x] Pull-to-refresh with sync trigger
+- [x] Search by amount, merchant, note, category
+- [x] Filter by date range, category, payment method
+- [x] Sort by date (default), amount, category
+- [x] Infinite scroll pagination
+- [x] Empty state with encouragement
 
 **Estimation:** 5 points
 
@@ -82,13 +82,13 @@
 **As a** user, **I want** to modify or remove expenses, **so that** I can correct mistakes.
 
 **Acceptance Criteria:**
-- [ ] Swipe left to edit (with spring reveal)
-- [ ] Swipe right to delete (with red background)
-- [ ] Edit opens pre-populated add form
-- [ ] 5-second undo snackbar after delete
-- [ ] Bulk select mode (long press to enter)
-- [ ] Bulk delete with confirmation dialog
-- [ ] Haptic feedback on delete action
+- [x] Swipe left to edit (with spring reveal)
+- [x] Swipe right to delete (with red background)
+- [x] Edit opens pre-populated add form
+- [x] 5-second undo snackbar after delete
+- [x] Bulk select mode (long press to enter)
+- [x] Bulk delete with confirmation dialog
+- [x] Haptic feedback on delete action
 
 **Estimation:** 3 points
 
@@ -96,13 +96,13 @@
 **As a** user, **I want** to set up recurring expenses, **so that** I don't manually enter rent, subscriptions, etc.
 
 **Acceptance Criteria:**
-- [ ] Create recurring from any expense
-- [ ] Frequency: daily, weekly, bi-weekly, monthly, quarterly, yearly, custom
-- [ ] End conditions: never, after N times, on date
-- [ ] Auto-generate occurrences
-- [ ] Skip individual instance
-- [ ] Edit series or single occurrence
-- [ ] Visual indicator on recurring expenses in list
+- [x] Create recurring from any expense
+- [x] Frequency: daily, weekly, bi-weekly, monthly, quarterly, yearly, custom
+- [x] End conditions: never, after N times, on date
+- [x] Auto-generate occurrences
+- [ ] Skip individual instance (deferred - requires additional schema)
+- [x] Edit series or single occurrence
+- [x] Visual indicator on recurring expenses in list
 
 **Estimation:** 5 points
 

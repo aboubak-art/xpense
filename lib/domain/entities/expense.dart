@@ -17,6 +17,7 @@ class Expense with _$Expense {
     String? paymentMethod,
     List<String>? tags,
     String? location,
+    String? recurringExpenseId,
     DateTime? deletedAt,
   }) = _Expense;
 }
@@ -33,5 +34,6 @@ class ExpenseInput with _$ExpenseInput {
     String? paymentMethod,
     List<String>? tags,
     String? location,
+    String? recurringExpenseId,
   }) = _ExpenseInput;
 }

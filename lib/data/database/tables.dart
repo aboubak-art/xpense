@@ -27,6 +27,7 @@ class Expenses extends Table {
   TextColumn get paymentMethod => text().nullable()();
   TextColumn get tags => text().nullable()();
   TextColumn get location => text().nullable()();
+  TextColumn get recurringExpenseId => text().nullable()();
   DateTimeColumn get date => dateTime()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();

@@ -23,6 +23,7 @@ class ExpenseDao {
       paymentMethod: row.paymentMethod,
       tags: row.tags?.split(','),
       location: row.location,
+      recurringExpenseId: row.recurringExpenseId,
       date: row.date,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
@@ -41,6 +42,7 @@ class ExpenseDao {
       paymentMethod: Value(input.paymentMethod),
       tags: Value(input.tags?.join(',')),
       location: Value(input.location),
+      recurringExpenseId: Value(input.recurringExpenseId),
       date: Value(input.date),
     );
   }
@@ -63,6 +65,22 @@ class ExpenseDao {
       ..where((e) => e.id.equals(id) & e.deletedAt.isNull());
     final row = await query.getSingleOrNull();
     return row == null ? null : _toDomain(row);
+  }
+
+  Future<List<domain.Expense>> getByRecurringExpenseId(
+    String recurringExpenseId,
+  ) async {
+    final query = _db.select(_db.expenses)
+      ..where(
+        (e) =>
+            e.recurringExpenseId.equals(recurringExpenseId) &
+            e.deletedAt.isNull(),
+      )
+      ..orderBy(
+        [(e) => OrderingTerm(expression: e.date, mode: OrderingMode.asc)],
+      );
+    final rows = await query.get();
+    return rows.map(_toDomain).toList();
   }
 
   Future<List<domain.Expense>> getByCategory(String categoryId) async {
@@ -127,5 +145,62 @@ class ExpenseDao {
       );
     final result = await query.getSingle();
     return result.read(_db.expenses.amountCents.sum()) ?? 0;
+  }
+
+  Future<List<domain.Expense>> search(
+    String query, {
+    String? categoryId,
+    String? paymentMethod,
+    DateTime? startDate,
+    DateTime? endDate,
+    String sortBy = 'date',
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    final dbQuery = _db.select(_db.expenses)
+      ..where((e) => e.deletedAt.isNull());
+
+    if (query.isNotEmpty) {
+      final lowerQuery = '%${query.toLowerCase()}%';
+      dbQuery.where(
+        (e) =>
+            e.note.lower().like(lowerQuery) |
+            e.merchant.lower().like(lowerQuery),
+      );
+    }
+
+    if (categoryId != null) {
+      dbQuery.where((e) => e.categoryId.equals(categoryId));
+    }
+
+    if (paymentMethod != null) {
+      dbQuery.where((e) => e.paymentMethod.equals(paymentMethod));
+    }
+
+    if (startDate != null && endDate != null) {
+      dbQuery.where((e) => e.date.isBetweenValues(startDate, endDate));
+    }
+
+    switch (sortBy) {
+      case 'amount':
+        dbQuery.orderBy([
+          (e) => OrderingTerm(expression: e.amountCents, mode: OrderingMode.desc),
+        ]);
+      case 'category':
+        dbQuery.orderBy([
+          (e) => OrderingTerm(expression: e.categoryId),
+          (e) => OrderingTerm(expression: e.date, mode: OrderingMode.desc),
+        ]);
+      case 'date':
+      default:
+        dbQuery.orderBy([
+          (e) => OrderingTerm(expression: e.date, mode: OrderingMode.desc),
+        ]);
+    }
+
+    dbQuery.limit(limit, offset: offset);
+
+    final rows = await dbQuery.get();
+    return rows.map(_toDomain).toList();
   }
 }
